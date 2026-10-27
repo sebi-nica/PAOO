@@ -1,0 +1,19 @@
+# foldere de build generate de CMake
+build/
+build-*/
+install/
+CMakeCache.txt
+CMakeFiles/
+
+# fisiere compilate
+*.o
+*.a
+*.so
+
+# setari locale de editor
+.vscode/
+.idea/
+
+# materialele primite de la laborator (nu fac parte din cod)
+Cmake.docx
+details.txt
