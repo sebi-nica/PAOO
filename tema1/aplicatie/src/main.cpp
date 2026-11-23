@@ -1,11 +1,6 @@
-// ============================================================================
-//  Aplicatie demonstrativa PAOO - foloseste biblioteca statica studentlib
-//
-//  Rulare:  ./aplicatie           -> toate demonstratiile
-//           ./aplicatie --crash   -> arata double free-ul REAL (programul cade)
-// ============================================================================
-#include "Student.h"            // header-ul exportat de biblioteca (proiectul 1)
-#include "StudentFaraCopy.h"    // contra-exemplul (fara copy constructor)
+// Demo studentlib. --crash: double free real.
+#include "Student.h"
+#include "StudentFaraCopy.h"
 
 #include <cstring>
 #include <iostream>
@@ -25,7 +20,6 @@ void heap(const char* moment) {
               << " blocuri alocate si neeliberate\n";
 }
 
-// ----------------------------------------------------------------------------
 void demoIncapsulare() {
     titlu("2. INCAPSULARE");
     std::cout << "Datele (nume_, note_) sunt private; se modifica doar prin metode care\n"
@@ -43,7 +37,6 @@ void demoIncapsulare() {
     std::cout << "  -> obiectul a ramas intr-o stare corecta (nicio nota invalida).\n";
 }
 
-// ----------------------------------------------------------------------------
 void demoInitializare() {
     titlu("3. INITIALIZAREA MEMBRILOR IN CONSTRUCTOR (lista de initializare)");
     std::cout << "Constructorul initializeaza toti membrii dupa ':' :\n"
@@ -64,7 +57,6 @@ void demoInitializare() {
               << "\n  numar note la inceput: " << a.numarNote() << " (nu valori aleatoare)\n";
 }
 
-// ----------------------------------------------------------------------------
 void demoDestructor() {
     titlu("4. ELIBERAREA HEAP-ULUI IN DESTRUCTOR");
     heap("inainte");
@@ -84,10 +76,10 @@ void demoDestructor() {
     heap("dupa delete");
 
     std::cout << "\n  Creez si distrug 1000 de studenti (fara mesaje):\n";
-    std::streambuf* vechi = std::cout.rdbuf(nullptr);   // opresc temporar afisarea
+    std::streambuf* vechi = std::cout.rdbuf(nullptr);   // fara output
     for (int i = 0; i < 1000; ++i) {
         Student s("Anonim");
-        for (int n = 1; n <= 10; ++n) s.adaugaNota(n);    // forteaza si realocari
+        for (int n = 1; n <= 10; ++n) s.adaugaNota(n);    // forteaza realocari
     }
     std::cout.rdbuf(vechi);
     heap("dupa 1000 de studenti");
@@ -96,7 +88,6 @@ void demoDestructor() {
                  "     pierdute (peste 2000 in bucla de mai sus).\n";
 }
 
-// ----------------------------------------------------------------------------
 void primesteStudentPrinValoare(Student s) {
     std::cout << "    in functie am primit copia: ";
     s.afiseaza();
@@ -108,7 +99,7 @@ void demoCopyConstructor() {
     std::cout << "a) Ce se intampla FARA copy constructor (StudentFaraCopy):\n";
     {
         StudentFaraCopy original(10);
-        StudentFaraCopy copie = original;   // copy constructor GENERAT -> shallow copy
+        StudentFaraCopy copie = original;   // shallow copy
         std::cout << "    adresa original: " << original.adresa()
                   << "\n    adresa copie:    " << copie.adresa()
                   << "   <- ACEEASI adresa!\n";
@@ -141,11 +132,10 @@ void demoCopyConstructor() {
     }
 }
 
-// ----------------------------------------------------------------------------
 Student creeazaBursier(const char* nume) {
     Student s(nume, 8);
     for (int n : {10, 10, 9, 10}) s.adaugaNota(n);
-    return s;   // la return se muta (sau compilatorul elimina complet copia - RVO)
+    return s;   // move sau RVO
 }
 
 void demoMoveConstructor() {
@@ -178,7 +168,7 @@ void demoMoveConstructor() {
     std::cout << "\nb) Vectorul isi mareste capacitatea: elementele vechi sunt MUTATE,\n"
                  "   nu copiate, pentru ca move constructor-ul e marcat noexcept:\n";
     inainte = Student::alocari();
-    grupa.push_back(Student("Horia"));      // obiect temporar -> move automat
+    grupa.push_back(Student("Horia"));      // temporar -> move
     std::cout << "    alocari noi: " << Student::alocari() - inainte
               << " (doar cele 2 ale lui Horia, nimic pentru studentii existenti)\n";
 
@@ -194,7 +184,6 @@ void demoMoveConstructor() {
     std::cout << "\n  -- sfarsitul functiei: se distrug toate obiectele --\n";
 }
 
-// ----------------------------------------------------------------------------
 void demoCrash() {
     titlu("DOUBLE FREE REAL (fara copy constructor)");
     StudentFaraCopy::modSigur = false;

@@ -4,19 +4,8 @@
 #include <iostream>
 #include <set>
 
-// ---------------------------------------------------------------------------
-// CONTRA-EXEMPLU, scris GRESIT intentionat.
-//
-// Clasa aloca memorie pe heap si o elibereaza in destructor, dar NU are copy
-// constructor propriu. Compilatorul genereaza atunci unul implicit, care copiaza
-// membru cu membru -> se copiaza doar ADRESA din pointer (shallow copy).
-// Rezultat: doua obiecte arata spre ACEEASI memorie, iar la distrugere aceeasi
-// memorie e eliberata de doua ori (double free -> programul e oprit de sistem).
-//
-// In modul "sigur" (implicit) destructorul detecteaza a doua eliberare si doar
-// o raporteaza, ca demonstratia sa poata continua. Cu argumentul --crash se
-// face double free-ul real.
-// ---------------------------------------------------------------------------
+// Contra-exemplu: fara copy constructor -> shallow copy -> double free.
+// modSigur doar raporteaza a doua eliberare; --crash o face real.
 class StudentFaraCopy {
 public:
     static bool modSigur;
@@ -27,7 +16,7 @@ public:
                   << nota_ << "\n";
     }
 
-    // !!! LIPSESTE copy constructor-ul -> se foloseste cel generat de compilator
+    // lipseste intentionat copy constructor-ul
 
     ~StudentFaraCopy() {
         if (modSigur && eliberate().count(nota_) != 0) {

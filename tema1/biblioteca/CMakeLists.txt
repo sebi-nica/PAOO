@@ -1,6 +1,4 @@
-# ============================================================================
-#  PROIECTUL 1: studentlib - biblioteca STATICA + header-ul Student.h
-# ============================================================================
+# Biblioteca statica studentlib
 cmake_minimum_required(VERSION 3.10)
 
 project(studentlib VERSION 1.0 LANGUAGES CXX)
@@ -14,15 +12,11 @@ set(STUDENTLIB_SURSE
     inc/Student.h
 )
 
-# STATIC -> se genereaza libstudentlib.a
 add_library(${PROJECT_NAME} STATIC ${STUDENTLIB_SURSE})
 
-# Alias cu namespace, ca proiectul care o foloseste sa scrie mereu
-# studentlib::studentlib (fie ca o ia din add_subdirectory, fie din find_package)
+# Acelasi nume ca dupa find_package
 add_library(studentlib::studentlib ALIAS ${PROJECT_NAME})
 
-# inc/ e PUBLIC: cine leaga biblioteca primeste automat calea spre Student.h
-# src/ e PRIVATE: doar biblioteca il vede
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/inc>
@@ -33,11 +27,7 @@ target_include_directories(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 
-# ---------------------------------------------------------------------------
-# EXPORT: "make install" copiaza libstudentlib.a + Student.h si genereaza un
-# fisier de configurare, astfel incat alt proiect sa poata scrie:
-#     find_package(studentlib)
-# ---------------------------------------------------------------------------
+# Instalare + export pentru find_package(studentlib)
 install(TARGETS ${PROJECT_NAME}
     EXPORT studentlibTargets
     ARCHIVE DESTINATION lib

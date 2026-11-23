@@ -10,12 +10,11 @@ int main() {
     Client ana("Ana Popescu", "2950101123456");
     Client mihai("Mihai Ionescu", "1880505654321");
 
-    // Jurnalul este construit abia acum, la prima folosire (Item 4).
+    // Item 4: jurnalul se construieste aici, la prima folosire
     ContBancar contAna("RO01PAOO0001", ana);
     ContBancar contMihai("RO01PAOO0002", mihai);
 
-    // Item 5: copy constructor generat de compilator pentru Client.
-    // Fiecare cont pastreaza propria copie a datelor clientului.
+    // Item 5: copy ctor generat pentru Client
     Client anaCopie = ana;
     std::cout << "Copie client (generata de compilator): " << anaCopie.nume() << "\n";
 
@@ -27,18 +26,18 @@ int main() {
     Card cardAna(contAna, "4111-0001");
     cardAna.plateste(50, "Librarie");
 
-    // Item 5: copy constructor generat pentru Card -> card duplicat pe ACELASI cont.
+    // Item 5: copy ctor generat -> card pe acelasi cont
     Card cardDuplicat(cardAna);
     cardDuplicat.plateste(120, "Supermarket");
 
-    // Item 5: operator= NU este generat pentru Card (membru referinta + membru const):
+    // Item 5: Card nu are operator=:
     // Card cardMihai(contMihai, "4111-0002");
-    // cardMihai = cardAna;              // eroare de compilare
+    // cardMihai = cardAna;
 
-    // Item 6: conturile si jurnalul NU pot fi copiate:
-    // ContBancar clona(contAna);        // eroare: copy constructor sters (= delete)
-    // contMihai = contAna;              // eroare: operator= sters (= delete)
-    // Jurnal altJurnal(jurnal());       // eroare: Uncopyable(const Uncopyable&) e private
+    // Item 6: nu se compileaza:
+    // ContBancar clona(contAna);        // = delete
+    // contMihai = contAna;              // = delete
+    // Jurnal altJurnal(jurnal());       // Uncopyable: private
 
     std::cout << "\nSolduri finale:\n";
     std::cout << "  " << contAna.iban() << "  " << contAna.titular().nume() << ": " << contAna.sold() << " lei\n";

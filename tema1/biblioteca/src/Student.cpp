@@ -12,7 +12,6 @@ namespace {
 const char* textSigur(const char* t) { return t ? t : "<gol>"; }
 }
 
-// ----------------------------------------------------------------- utilitare
 
 char* Student::copiazaText(const char* text) {
     if (text == nullptr) text = "";
@@ -49,12 +48,7 @@ void Student::cresteCapacitatea() {
     capacitate_ = capacitateNoua;
 }
 
-// ---------------------------------------------------------------- constructor
-// Toti membrii sunt initializati in LISTA DE INITIALIZARE (dupa ":"), nu prin
-// atribuire in corpul constructorului:
-//   * id_ este const -> compilatorul NU permite "id_ = ..." in corp;
-//   * pointerii primesc direct o adresa valida; daca i-am lasa neinitializati,
-//     destructorul ar face delete[] pe o adresa aleatoare -> crash.
+// Lista de initializare: id_ e const, pointerii pornesc valizi.
 Student::Student(const char* nume, std::size_t capacitateInitiala)
     : id_(urmatorulId_++),
       nume_(copiazaText(nume)),
@@ -66,7 +60,6 @@ Student::Student(const char* nume, std::size_t capacitateInitiala)
               << "' creat (heap: nume + loc pentru " << capacitate_ << " note)\n";
 }
 
-// ----------------------------------------------------------------- destructor
 Student::~Student() {
     if (nume_ == nullptr && note_ == nullptr) {
         std::cout << "  [destructor]        Student #" << id_
@@ -78,9 +71,7 @@ Student::~Student() {
     elibereaza();
 }
 
-// ----------------------------------------------------------- copy constructor
-// Copiere IN ADANCIME: obiectul nou primeste propriile zone de memorie, cu
-// acelasi continut. Cele doua obiecte devin complet independente.
+// Deep copy: memorie proprie, acelasi continut.
 Student::Student(const Student& other)
     : id_(urmatorulId_++),
       nume_(copiazaText(other.nume_)),
@@ -93,10 +84,7 @@ Student::Student(const Student& other)
               << "' = COPIE a lui #" << other.id_ << " (memorie heap NOUA)\n";
 }
 
-// ----------------------------------------------------------- move constructor
-// Nu aloca nimic: preia pointerii obiectului sursa si il lasa intr-o stare
-// goala, dar valida (pointeri nullptr), ca destructorul lui sa nu elibereze
-// memoria care acum ne apartine noua.
+// Preia pointerii; sursa ramane goala (nullptr).
 Student::Student(Student&& other) noexcept
     : id_(urmatorulId_++),
       nume_(other.nume_),
@@ -112,10 +100,9 @@ Student::Student(Student&& other) noexcept
               << "' a PRELUAT memoria lui #" << other.id_ << " (zero alocari)\n";
 }
 
-// ------------------------------------------------------------ copy assignment
 Student& Student::operator=(const Student& other) {
     if (this != &other) {
-        // intai alocam si copiem, abia apoi eliberam vechea memorie
+        // aloca intai, elibereaza dupa
         int* noteNoi = alocaNote(other.capacitate_ == 0 ? 1 : other.capacitate_);
         char* numeNou = copiazaText(other.nume_);
         if (other.note_ != nullptr) std::copy(other.note_, other.note_ + other.nrNote_, noteNoi);
@@ -133,7 +120,6 @@ Student& Student::operator=(const Student& other) {
     return *this;
 }
 
-// ------------------------------------------------------------ move assignment
 Student& Student::operator=(Student&& other) noexcept {
     if (this != &other) {
         elibereaza();
@@ -151,7 +137,6 @@ Student& Student::operator=(Student&& other) noexcept {
     return *this;
 }
 
-// ------------------------------------------------------------ interfata
 bool Student::adaugaNota(int nota) {
     if (nota < 1 || nota > 10) {
         std::cout << "    -> refuzat: nota " << nota << " nu este intre 1 si 10\n";

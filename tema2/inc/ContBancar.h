@@ -7,9 +7,7 @@ class ContBancar {
 public:
     ContBancar(const std::string& iban, const Client& titular);
 
-    // Item 6: un cont bancar este unic. O copie ar insemna doi "clone" cu
-    // acelasi IBAN si aceiasi bani -> interzicem explicit functiile pe care
-    // compilatorul le-ar genera altfel.
+    // Item 6: contul e unic -> fara copiere
     ContBancar(const ContBancar&) = delete;
     ContBancar& operator=(const ContBancar&) = delete;
 
@@ -21,11 +19,10 @@ public:
     int sold() const { return sold_; }
 
 private:
-    // Item 4: membrii sunt initializati in ORDINEA DECLARARII de mai jos,
-    // indiferent de ordinea din lista de initializare a constructorului.
-    const std::string iban_;   // const -> poate fi doar initializat, nu atribuit
-    Client titular_;           // fara constructor implicit -> obligatoriu in lista
-    int sold_;                 // built-in -> fara initializare ar avea o valoare oarecare
+    // Item 4: initializati in ordinea declararii
+    const std::string iban_;
+    Client titular_;           // fara ctor implicit
+    int sold_;                 // built-in -> initializat explicit
 };
 
 static_assert(!std::is_copy_constructible<ContBancar>::value, "contul nu se copiaza");
